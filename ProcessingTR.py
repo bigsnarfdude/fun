@@ -4,7 +4,9 @@ Processing Transaction Records Library
 
 __author__ = 'vincent'
 
+import re
 import requests
+from collections import defaultdict
 from TRecord import Record
 
 class PTR:
@@ -60,9 +62,11 @@ class PTR:
             bunch_transactions.append(Record(data_dict))
         return bunch_transactions
 
+
     @staticmethod
     def totalCount(bunch_transactions):
         return len(bunch_transactions)
+
 
     @staticmethod
     def totalBalance(bunch_transactions):
@@ -71,38 +75,52 @@ class PTR:
             balance += item.amount
         return balance
 
-    @staticmethod
-    def cleanNames(bunch_transactions):
-        temp = Set()
-        for item in bunch_transactions:
-            temp.add(" ".join(item.company().split()[0:2]))
-        return temp
 
     @staticmethod
-    def findDuplicates(transactions):
-        try:
-            for i in range(len(transactions)):
-                a = transactions[i]
-                b = transactions[i+1]
-                if a.company() == b.company():
-                    if a.date() == b.date():
-                        if a.amount() == b.amount():
-                            return transactions[i].s
-        except:
-            pass
+    def cleanWords(bunch_transactions):
+        cleaned_names = []
+        for item in bunch_transactions:
+            stripped = re.sub(r'.x+\d{4}', '', item.company)
+            stripped_again = re.sub(r'CA x*\d+.\d+ USD @', "", stripped)
+            item.company = stripped_again
+            cleaned_names.append(item)
+        return cleaned_names
+
+
+    @staticmethod
+    def removeDuplicates(transactions):
+        seen = set()
+        index = range(len(transactions))
+        for i in index:
+            for j in index[1:]:
+                if transactions[index[i]].company == transactions[index[j]].company:
+                    if transactions[index[i]].date == transactions[index[j]].date:
+                        if transactions[index[i]].amount == transactions[index[j]].amount:
+                            if transactions[index[i]] not in seen:
+                                seen.add(transactions[index[i]])
+        return seen
+
+
+    @staticmethod
+    def findDuplicates(transactions, seen):
+        for val in transactions:
+            if val in seen:
+                return val.string
+
 
     @staticmethod
     def categoryTotals(transactions):
         expense_categories = defaultdict(list)
         for i in transactions:
-            expense_categories[i.ledger()].append(i)
+            expense_categories[i.ledger].append(i)
         for cat, values in expense_categories.iteritems():
-            print cat, TransactionProcessing.totalBalance(values)
+            print cat, PTR.totalBalance(values)
+
 
     @staticmethod
     def getTransactionPerCategory(transactions):
         expense_categories = defaultdict(list)
         for i in transactions:
-            expense_categories[i.ledger()].append(i)
+            expense_categories[i.ledger].append(i)
         for cat, values in expense_categories.iteritems():
-            print cat, [x.s for x in values]
+            print cat, [x.string for x in values]
