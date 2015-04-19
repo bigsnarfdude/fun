@@ -4,7 +4,8 @@ Processing Transaction Records Library
 
 __author__ = 'vincent'
 
-import urllib2
+import requests
+from TRecord import Record
 
 class PTR:
     """
@@ -13,37 +14,55 @@ class PTR:
 
     @staticmethod
     def getData(url):
-        #url_1 = 'http://resttest.bench.co/transactions/1.json'
-        #url_2 = 'http://resttest.bench.co/transactions/2.json'
-        #url_3 = 'http://resttest.bench.co/transactions/3.json'
-        #url_4 = 'http://resttest.bench.co/transactions/4.json'
-        #data_pages = [url]
-        #data_strings = defaultdict()
-        #for page in data_pages:
-        data_strings = urllib2.urlopen(url).read()
-        #data_frames = defaultdict()
-        #for k,v in data_strings.iteritems():
-        #    data_frames[k] = pd.io.json.read_json(v)
-        #combined_df = pd.concat(data_frames)
-        return data_strings
+        """
+        function will take initial url requested and
+        increment requests to size of totalCount
+        :param url:
+        :return list of transactions:
+        """
+        prefix = "/".join(url.split("/")[0:-1])
+        returned_transactions = []
+        transaction_counter = 0
+
+        def _inner_get(url, returned_transactions, transaction_counter):
+            """
+            recursive function to paginate rest
+            :param url:
+            :param returned_transactions:
+            :param transaction_counter:
+            :return _inner_get(url, returned_transactions, transaction_counter):
+            """
+            try:
+                r = requests.get(url)
+                current_page = r.json()['page']
+                current_balance = r.json()['totalBalance']
+                current_count = r.json()['totalCount']
+                current_transactions = r.json()['transactions']
+                length_current_transactions = len(current_transactions)
+                if transaction_counter < int(current_count):
+                    page = int(current_page) + 1
+                    requested_url = prefix+"/"+str(page)+".json"
+                    returned_transactions += current_transactions
+                    transaction_counter += length_current_transactions
+                    return _inner_get(requested_url, returned_transactions, transaction_counter)
+            except:
+                pass
+
+        _inner_get(url, returned_transactions, transaction_counter)
+
+        return returned_transactions
+
 
     @staticmethod
-    def processTransactions(combined_df):
+    def processTransactions(raw_data):
         bunch_transactions = []
-        for item in combined_df['transactions']:
-            bunch_transactions.append(TRecord(item))
+        for data_dict in raw_data:
+            bunch_transactions.append(Record(data_dict))
         return bunch_transactions
 
     @staticmethod
     def totalCount(bunch_transactions):
         return len(bunch_transactions)
-
-    @staticmethod
-    def getObjects(combined_df):
-        bunch_transactions = []
-        for item in combined_df['transactions']:
-            bunch_transactions.append(TRecord(item))
-        return bunch_transactions
 
     @staticmethod
     def totalBalance(bunch_transactions):
