@@ -4,7 +4,6 @@ Transaction Record Class
 
 __author__ = 'vincent'
 
-import json
 import datetime
 
 class Record(object):
