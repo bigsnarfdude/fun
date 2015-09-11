@@ -37,7 +37,7 @@ class PTR:
             try:
                 r = requests.get(url)
                 current_page = r.json()['page']
-                current_balance = r.json()['totalBalance']
+                #current_balance = r.json()['totalBalance']
                 current_count = r.json()['totalCount']
                 current_transactions = r.json()['transactions']
                 length_current_transactions = len(current_transactions)
@@ -48,7 +48,7 @@ class PTR:
                     transaction_counter += length_current_transactions
                     return _inner_get(requested_url, returned_transactions, transaction_counter)
             except:
-                pass
+                print("requests broken")
 
         _inner_get(url, returned_transactions, transaction_counter)
 
