@@ -42,5 +42,6 @@ localhost:9000/totalBalance
 ```
 
 ```
-curl localhost:9000/totalBalanceDeDuped
+POST '{"page":"1.json"}' to: 
+localhost:9000/totalBalanceDeDuped
 ```
