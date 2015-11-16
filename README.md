@@ -1,6 +1,7 @@
 # Mock JSON Data Server
 
-```$ sbt
+```
+$ sbt
 [info] Loading project definition from /fun/project
 ...
 > mock/re-start
@@ -16,7 +17,8 @@ mock Starting com.example.mock.Main.main()
 
 # Backend API Server
 
-```$ sbt
+```
+$ sbt
 [info] Loading project definition from /fun/project
 ...
 > backend/run
@@ -34,7 +36,8 @@ Hit ENTER to exit[DEBUG] [11/06/2015 15:17:27.281] [default-akka.actor.default-d
 
 # get API data
 
-```POST 
+```
+POST '{"page":"1.json"}' to: 
 localhost:9000/totalBalance
 ```
 
