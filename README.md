@@ -35,6 +35,10 @@ Hit ENTER to exit[DEBUG] [11/06/2015 15:17:27.281] [default-akka.actor.default-d
 
 # get API data
 
-`curl localhost:9000/totalBalance`
+```POST 
+localhost:9000/totalBalance
+```
 
-`curl localhost:9000/totalBalanceDeDuped`
+```
+curl localhost:9000/totalBalanceDeDuped
+```
