@@ -1,4 +1,3 @@
-
 # Mock JSON Data Server
 
 ```$ sbt
