@@ -1,3 +1,13 @@
+# Get code
+
+`git clone https://github.com/bigsnarfdude/fun.git`
+
+`cd fun`
+
+`git checkout scala`
+
+
+
 # Mock JSON Data Server
 
 ```
